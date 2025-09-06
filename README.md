@@ -129,6 +129,14 @@ docker-compose up -d
 - **웹 입력**: Personal Access Token 직접 입력
 - **토큰 생성**: [GitHub Settings](https://github.com/settings/tokens)
 
+#### 필요한 토큰 스코프
+- **`repo`** - Repository 전체 접근 (Public + Private Repository)
+- **`read:user`** - 사용자 정보 읽기 (토큰 검증용)
+
+> **참고**: Public Repository만 사용해도 `repo` 스코프가 필요합니다
+
+> **🔒 보안 안내**: 최소한의 권한만 요청하며, 개인정보를 절대 수집하지 않습니다. 토큰은 HttpOnly 쿠키로 안전하게 저장됩니다.
+
 ### 2. Repository 검색
 - **GitHub URL 모드**: URL을 입력하면 자동 파싱
 - **Owner/Name 별도 모드**: 각각 따로 입력
@@ -149,6 +157,11 @@ docker-compose up -d
 - Repository 접근 권한 확인
 - Private repository 접근 제어
 - Rate limiting 고려
+
+### 3. GitHub 토큰 스코프
+- **`repo`**: Repository 정보, 브랜치, 태그, 파일 내용 조회 (Public + Private)
+- **`read:user`**: 사용자 인증 및 토큰 유효성 검증
+- **참고**: Public Repository만 사용해도 `repo` 스코프가 필요합니다
 
 ## 🧪 API 엔드포인트
 

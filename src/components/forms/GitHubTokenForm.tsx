@@ -7,9 +7,9 @@ interface GitHubTokenFormProps {
   onSkip?: () => void;
 }
 
-export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({ 
-  onTokenSaved, 
-  onSkip 
+export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
+  onTokenSaved,
+  onSkip
 }) => {
   const [token, setToken] = useState('');
   const [isValidating, setIsValidating] = useState(false);
@@ -18,22 +18,22 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
     message: string;
     username?: string;
   } | null>(null);
-  
+
   const validateToken = async () => {
     if (!token.trim()) return;
-    
+
     setIsValidating(true);
     setValidationResult(null);
-    
+
     try {
       const response = await fetch('/api/github/validate-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
       });
-      
+
       const result = await response.json();
-      
+
       if (result.isValid) {
         setValidationResult({
           isValid: true,
@@ -55,10 +55,10 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
       setIsValidating(false);
     }
   };
-  
+
   const handleSaveToken = async () => {
     if (!validationResult?.isValid) return;
-    
+
     try {
       // 서버에 토큰 저장
       await fetch('/api/github/token', {
@@ -66,7 +66,7 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
       });
-      
+
       onTokenSaved();
     } catch (error) {
       setValidationResult({
@@ -75,7 +75,7 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
       });
     }
   };
-  
+
   return (
     <div className="space-y-6">
       <div>
@@ -93,9 +93,9 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
           />
         </div>
         <p className="mt-2 text-sm text-gray-500">
-          <a 
-            href="https://github.com/settings/tokens" 
-            target="_blank" 
+          <a
+            href="https://github.com/settings/tokens"
+            target="_blank"
             rel="noopener noreferrer"
             className="text-indigo-600 hover:text-indigo-500"
           >
@@ -103,7 +103,7 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
           </a>
         </p>
       </div>
-      
+
       <div className="flex space-x-3">
         <button
           onClick={validateToken}
@@ -112,7 +112,7 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
         >
           {isValidating ? '검증 중...' : '토큰 검증'}
         </button>
-        
+
         {onSkip && (
           <button
             onClick={onSkip}
@@ -122,17 +122,16 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
           </button>
         )}
       </div>
-      
+
       {validationResult && (
-        <div className={`p-3 rounded-md ${
-          validationResult.isValid 
-            ? 'bg-green-50 text-green-800' 
-            : 'bg-red-50 text-red-800'
-        }`}>
+        <div className={`p-3 rounded-md ${validationResult.isValid
+          ? 'bg-green-50 text-green-800'
+          : 'bg-red-50 text-red-800'
+          }`}>
           <p className="text-sm">{validationResult.message}</p>
         </div>
       )}
-      
+
       {validationResult?.isValid && (
         <button
           onClick={handleSaveToken}
@@ -141,7 +140,7 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
           토큰 저장하고 시작하기
         </button>
       )}
-      
+
       <div className="bg-blue-50 p-4 rounded-md">
         <h4 className="text-sm font-medium text-blue-800">토큰이 필요한 이유</h4>
         <ul className="mt-2 text-sm text-blue-700 space-y-1">
@@ -149,6 +148,21 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
           <li>• API 버전별 변경사항 분석</li>
           <li>• Rate limiting 우회 (인증된 요청)</li>
         </ul>
+
+        <h4 className="text-sm font-medium text-blue-800 mt-4">필요한 토큰 스코프</h4>
+        <ul className="mt-2 text-sm text-blue-700 space-y-1">
+          <li>• <code className="bg-blue-100 px-1 rounded">repo</code> - Repository 전체 접근 (Public + Private)</li>
+          <li>• <code className="bg-blue-100 px-1 rounded">read:user</code> - 사용자 정보 읽기</li>
+        </ul>
+        <p className="mt-2 text-xs text-blue-600">
+          Public Repository만 사용해도 <code className="bg-blue-100 px-1 rounded">repo</code> 스코프가 필요합니다
+        </p>
+        <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded">
+          <p className="text-xs text-green-700">
+            <strong>🔒 보안 안내:</strong> 최소한의 권한만 요청하며, 개인정보를 절대 수집하지 않습니다.
+            토큰은 브라우저에만 저장되며 서버로 전송되지 않습니다.
+          </p>
+        </div>
       </div>
     </div>
   );
