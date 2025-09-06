@@ -21,25 +21,13 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    restart: unless-stopped
+    restart: always
     networks:
       - app-network
-
-  # Redis for caching (optional)
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    networks:
-      - app-network
-    restart: unless-stopped
 
 volumes:
   swagger-cache:
   temp-files:
-  redis-data:
 
 networks:
   app-network:
