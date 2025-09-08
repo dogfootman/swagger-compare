@@ -7,6 +7,8 @@ interface TokenContextType {
   hasToken: boolean;
   isLoading: boolean;
   refreshToken: () => void;
+  showTokenFormForced: () => void;
+  hideTokenForm: () => void;
 }
 
 const TokenContext = createContext<TokenContextType | undefined>(undefined);
@@ -35,13 +37,15 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       } else {
         // 환경변수나 저장된 토큰이 없는 경우
         setHasToken(false);
-        setShowTokenForm(true);
-        console.log('[TokenProvider] No token found, showing token form');
+        // Docker 환경에서는 토큰 설정 화면을 즉시 표시하지 않음
+        // repository 검색 실패 시에만 표시하도록 변경
+        setShowTokenForm(false);
+        console.log('[TokenProvider] No token found, will show form only when needed');
       }
     } catch (error) {
       console.error('[TokenProvider] Error checking token status:', error);
       setHasToken(false);
-      setShowTokenForm(true);
+      setShowTokenForm(false);
     } finally {
       setIsLoading(false);
     }
@@ -52,14 +56,27 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const handleTokenSaved = () => {
-    setHasToken(true);
+    // 토큰 저장 후 토큰 설정 화면을 닫고 서버에서 토큰 상태를 다시 확인
     setShowTokenForm(false);
+    checkTokenStatus();
   };
 
   const handleSkip = () => {
     setShowTokenForm(false);
     // 토큰 없이도 기본 기능 사용 가능하도록 설정
     setHasToken(false);
+  };
+
+  // 토큰 설정 화면을 강제로 표시하는 함수 (repository 검색 실패 시 사용)
+  const showTokenFormForced = () => {
+    setShowTokenForm(true);
+  };
+
+  // 토큰 설정 화면을 닫는 함수
+  const hideTokenForm = () => {
+    setShowTokenForm(false);
+    // 토큰 설정 화면을 닫을 때 토큰 상태를 다시 확인
+    checkTokenStatus();
   };
 
   if (isLoading) {
@@ -93,7 +110,7 @@ export const TokenProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }
 
   return (
-    <TokenContext.Provider value={{ hasToken, isLoading, refreshToken }}>
+    <TokenContext.Provider value={{ hasToken, isLoading, refreshToken, showTokenFormForced, hideTokenForm }}>
       {children}
     </TokenContext.Provider>
   );

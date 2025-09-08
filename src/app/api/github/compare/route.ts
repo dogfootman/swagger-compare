@@ -1,4 +1,4 @@
-import { GitHubService } from '@/lib/github';
+import { GitHubService, GitHubError } from '@/lib/github';
 import { SwaggerCompareService } from '@/lib/swaggerCompareService';
 import { SwaggerDiscoveryService } from '@/lib/swaggerDiscovery';
 import { cookies } from 'next/headers';
@@ -197,7 +197,10 @@ export async function POST(request: NextRequest) {
     let statusCode = 500;
 
     if (error instanceof Error) {
-      if (error.message.includes('Not Found')) {
+      if (error instanceof GitHubError && error.status === 401) {
+        errorMessage = 'GitHub token not found';
+        statusCode = 401;
+      } else if (error.message.includes('Not Found')) {
         errorMessage = 'One or both versions not found';
         statusCode = 404;
       } else if (error.message.includes('Access denied')) {

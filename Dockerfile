@@ -10,7 +10,8 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat wget
 
 # oasdiff 도구 설치 (특정 버전 및 오류 처리 개선)
-RUN wget -O /tmp/oasdiff.tar.gz "https://github.com/oasdiff/oasdiff/releases/download/v${OASDIFF_VERSION}/oasdiff_${OASDIFF_VERSION}_linux_amd64.tar.gz" \
+RUN OASDIFF_VERSION=1.11.7 && \
+    wget -O /tmp/oasdiff.tar.gz "https://github.com/oasdiff/oasdiff/releases/download/v${OASDIFF_VERSION}/oasdiff_${OASDIFF_VERSION}_linux_amd64.tar.gz" \
     && tar -xzf /tmp/oasdiff.tar.gz -C /tmp \
     && mv /tmp/oasdiff /usr/local/bin/ \
     && chmod +x /usr/local/bin/oasdiff \

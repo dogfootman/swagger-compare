@@ -151,7 +151,7 @@ export const GitHubTokenForm: React.FC<GitHubTokenFormProps> = ({
 
         <h4 className="text-sm font-medium text-blue-800 mt-4">필요한 토큰 스코프</h4>
         <ul className="mt-2 text-sm text-blue-700 space-y-1">
-          <li>• <code className="bg-blue-100 px-1 rounded">repo</code> - Repository 전체 접근 (Public + Private)</li>
+          <li>• <code className="bg-blue-100 px-1 rounded">repo</code> - Repository 접근 (Public + Private) 읽기 권한</li>
           <li>• <code className="bg-blue-100 px-1 rounded">read:user</code> - 사용자 정보 읽기</li>
         </ul>
         <p className="mt-2 text-xs text-blue-600">

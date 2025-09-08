@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToken } from '@/components/TokenProvider';
 import { parseGitHubUrl, testGitHubUrlParsing } from '@/utils/githubUrlParser';
 // SwaggerPathConfig 제거됨 - URL에서 자동으로 경로 추출
@@ -48,7 +48,7 @@ interface ComparisonResult {
 }
 
 export const RepositoryForm: React.FC = () => {
-  const { hasToken } = useToken();
+  const { hasToken, showTokenFormForced, refreshToken, hideTokenForm } = useToken();
   const [githubUrl, setGithubUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +59,13 @@ export const RepositoryForm: React.FC = () => {
   const [comparisonResult, setComparisonResult] = useState<ComparisonResult | null>(null);
   const [isComparing, setIsComparing] = useState(false);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
+
+  // 토큰이 저장되면 에러 메시지 초기화
+  useEffect(() => {
+    if (hasToken && error === 'GitHub 토큰이 필요합니다. 토큰을 설정해주세요.') {
+      setError(null);
+    }
+  }, [hasToken, error]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,6 +127,14 @@ export const RepositoryForm: React.FC = () => {
         await fetchVersions(repoOwner, repoName);
       } else {
         const errorData = await response.json();
+        
+        // 토큰 관련 에러인 경우 토큰 설정 화면 표시
+        if (response.status === 401 && errorData.error === 'GitHub token not found') {
+          showTokenFormForced();
+          setError('GitHub 토큰이 필요합니다. 토큰을 설정해주세요.');
+          return;
+        }
+        
         setError(errorData.error || 'Repository를 찾을 수 없습니다.');
       }
     } catch (err) {
@@ -297,31 +312,8 @@ export const RepositoryForm: React.FC = () => {
   
   // SwaggerPathConfig 관련 함수들 제거됨
 
-  if (!hasToken) {
-    return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-        <div className="flex items-center space-x-2">
-          <span className="text-yellow-600">⚠️</span>
-          <div>
-            <p className="text-yellow-800 font-medium">
-              GitHub 토큰이 필요합니다
-            </p>
-            <p className="text-yellow-700 text-sm mt-1">
-              Repository를 검색하려면 먼저 GitHub Personal Access Token을 설정해주세요.
-            </p>
-            <div className="mt-2">
-              <button
-                onClick={() => window.location.reload()}
-                className="text-yellow-800 underline hover:no-underline text-sm"
-              >
-                토큰 설정으로 돌아가기
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // 토큰이 없어도 기본 UI는 표시하고, repository 검색 실패 시에만 토큰 설정 화면 표시
+  // 이 부분은 제거하여 항상 repository 검색 폼을 표시하도록 변경
   
   return (
     <div className="max-w-6xl mx-auto">

@@ -130,7 +130,7 @@ docker-compose up -d
 - **토큰 생성**: [GitHub Settings](https://github.com/settings/tokens)
 
 #### 필요한 토큰 스코프
-- **`repo`** - Repository 전체 접근 (Public + Private Repository)
+- **`repo`** - Repository 접근 (Public + Private Repository) 읽기 권한
 - **`read:user`** - 사용자 정보 읽기 (토큰 검증용)
 
 > **참고**: Public Repository만 사용해도 `repo` 스코프가 필요합니다

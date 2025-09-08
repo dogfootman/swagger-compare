@@ -1,4 +1,4 @@
-import { GitHubService } from '@/lib/github';
+import { GitHubService, GitHubError } from '@/lib/github';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -102,6 +102,13 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Swagger content fetch error:', error);
+
+    if (error instanceof GitHubError && error.status === 401) {
+      return NextResponse.json(
+        { error: 'GitHub token not found' },
+        { status: 401 }
+      );
+    }
 
     return NextResponse.json(
       { error: 'Internal server error' },

@@ -41,6 +41,14 @@ export async function POST(request: NextRequest) {
     );
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // GitHub API에서 401 에러가 발생한 경우 (토큰이 없거나 유효하지 않음)
+        return NextResponse.json(
+          { error: 'GitHub token not found' },
+          { status: 401 }
+        );
+      }
+
       if (response.status === 404) {
         return NextResponse.json(
           { error: 'Repository not found' },

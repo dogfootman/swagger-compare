@@ -3,7 +3,7 @@ export class TokenManager {
   
   /**
    * 토큰을 우선순위에 따라 로드
-   * 1. 환경변수 (설치형)
+   * 1. 환경변수 (Docker/설치형)
    * 2. 브라우저 저장소 (서비스형)
    * 3. 사용자 입력 요청
    */
@@ -13,7 +13,7 @@ export class TokenManager {
       return process.env.GITHUB_TOKEN || null;
     }
     
-    // 2. 브라우저 저장소 확인
+    // 2. 브라우저 저장소 확인 (클라이언트사이드)
     const storedToken = this.getStoredToken();
     if (storedToken) {
       return storedToken;

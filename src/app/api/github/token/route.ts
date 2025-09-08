@@ -59,7 +59,10 @@ export async function GET() {
     const token = cookieStore.get('github_token')?.value;
 
     if (!token) {
-      return NextResponse.json({ hasToken: false });
+      return NextResponse.json({ 
+        hasToken: false,
+        source: 'none'
+      });
     }
 
     // 토큰 유효성 재검증

@@ -24,6 +24,9 @@ export class GitHubService {
     );
     
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new GitHubError('GitHub token not found', response.status);
+      }
       throw new GitHubError(`Repository not found: ${owner}/${name}`, response.status);
     }
     
@@ -37,6 +40,9 @@ export class GitHubService {
     );
     
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new GitHubError('GitHub token not found', response.status);
+      }
       throw new GitHubError('Failed to fetch branches', response.status);
     }
     
@@ -50,6 +56,9 @@ export class GitHubService {
     );
     
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new GitHubError('GitHub token not found', response.status);
+      }
       throw new GitHubError('Failed to fetch tags', response.status);
     }
     
@@ -70,6 +79,9 @@ export class GitHubService {
     const response = await fetch(url.toString(), { headers: this.getHeaders() });
     
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new GitHubError('GitHub token not found', response.status);
+      }
       throw new GitHubError(`File not found: ${path}`, response.status);
     }
     
